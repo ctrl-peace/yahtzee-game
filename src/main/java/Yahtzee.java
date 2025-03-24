@@ -5,31 +5,31 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
 public class Yahtzee implements ActionListener {
+  //GUI components
   JFrame frame;
   JTable table;
   private DefaultTableModel model;
   JPanel contentPane, contentPane2,contentPane3;
   JButton dice1, dice2, dice3, dice4, dice5, reroll, replay;
   JLabel label;
-  int[] diceNums ={0,0,0,0,0};
-  int playerTurn = 1;
-  int roll=1;
-  int totalRounds = 0;
-  int[] playerRounds={0,0};
-  int upTotal1=0;
-  int downTotal1=0;
-  int upTotal2=0;
-  int downTotal2=0;
-  int total1=0;
-  int total2=0;
-  int bonus1=0;
-  int bonus2=0;
-  int filled = 0;
 
+  //Game variables
+  int[] diceNums = {0, 0, 0, 0, 0};  // Array to store the dice values
+  int playerTurn = 1;  // Tracks which player's turn it is (1 or 2)
+  int roll = 1;  // Roll counter (max 3 rolls per turn)
+  int totalRounds = 0;  // Total rounds played
+  int[] playerRounds = {0, 0};  // Rounds for Player 1 and Player 2
+  int upTotal1 = 0, downTotal1 = 0, upTotal2 = 0, downTotal2 = 0;  // Scores for both players
+  int total1 = 0, total2 = 0;  // Total scores for both players
+  int bonus1 = 0, bonus2 = 0;  // Bonuses for both players
+  int filled = 0;  // Flag to check if the score table is filled
+
+  //Constructor to set up the game UI
   public Yahtzee() {
     frame = new JFrame("Yahtzee");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+    //Panel layout setup
     contentPane = new JPanel();
     contentPane.setLayout(new GridLayout(1, 2, 10, 5));
     contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -39,10 +39,10 @@ public class Yahtzee implements ActionListener {
 
     contentPane3 = new JPanel();
     contentPane3.setLayout(new GridLayout(0, 1, 10, 5));
-
     
     contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+    //Dice buttons setup
     dice1=new JButton(new ImageIcon());
     dice1=decideButton(1,diceNums,dice1);
     dice1.addActionListener(this);
@@ -58,15 +58,16 @@ public class Yahtzee implements ActionListener {
     dice5=new JButton(new ImageIcon());
     dice5=decideButton(5,diceNums,dice5);
     dice5.addActionListener(this);
-    
+
+    //Reroll and Replay buttons
     reroll = new JButton("Reroll");
     reroll.setActionCommand("Reroll");
     reroll.addActionListener(this);
-
     replay = new JButton("Replay");
     replay.setActionCommand("Replay");
     replay.addActionListener(this);
-    
+
+    //Add dice buttons to the panel
     contentPane2.add(dice1);
     contentPane2.add(dice2);
     contentPane2.add(dice3);
@@ -74,12 +75,17 @@ public class Yahtzee implements ActionListener {
     contentPane2.add(dice5);
     contentPane2.add(reroll);
 
+    //Add table for scores
     contentPane.add(contentPane2);
-    
-
     String[] columnNames = {"", "Player 1", "Player2"};
-    String[][] data = {{"Ones", "", ""}, {"Twos", "", ""}, {"Threes", "",""},{"Fours", "", ""}, {"Fives", "", ""}, {"Sixes", "", ""}, {"Three of a Kind", "", ""}, {"Four of a Kind", "", ""}, {"Full House", "", ""}, {"Small Straight", "", ""}, {"Large Straight", "", ""}, {"Chance", "", ""}, {"Yahtzee", "", ""}};
+    String[][] data = {{"Ones", "", ""}, {"Twos", "", ""}, {"Threes", "",""},
+                       {"Fours", "", ""}, {"Fives", "", ""}, {"Sixes", "", ""}, 
+                       {"Three of a Kind", "", ""}, {"Four of a Kind", "", ""}, 
+                       {"Full House", "", ""}, {"Small Straight", "", ""}, 
+                       {"Large Straight", "", ""}, {"Chance", "", ""}, 
+                       {"Yahtzee", "", ""}};
 
+    //Scoreboard model
     model = new DefaultTableModel(data, columnNames);
     table = new JTable(model);
     table.setPreferredScrollableViewportSize(new Dimension(500, 300));
@@ -89,41 +95,31 @@ public class Yahtzee implements ActionListener {
     table.getColumnModel().getColumn(0).setPreferredWidth(100);
     JScrollPane scrollPane = new JScrollPane(table);
     contentPane3.add(scrollPane);
+
+    //Turn label
     label = new JLabel("Player 1's turn");
     contentPane3.add(label);
     contentPane.add(contentPane3);
+
+    //Table click listener for scoring
     table.addMouseListener(new java.awt.event.MouseAdapter(){
       @Override
       public void mouseClicked(java.awt.event.MouseEvent event){
-      int row = table.rowAtPoint(event.getPoint());
-      int col = table.columnAtPoint(event.getPoint());
-        int ones=0;
-        int twos=0;
-        int threes=0;
-        int fours=0;
-        int fives=0;
-        int sixes=0;
+        int row = table.rowAtPoint(event.getPoint());
+        int col = table.columnAtPoint(event.getPoint());
+        int ones = 0, twos = 0, threes = 0, fours = 0, fives = 0, sixes = 0;
 
+        //Count occurrences of each dice value
         for(int i=0;i<5;i++){
-          if(diceNums[i]==1){
-            ones++;
-          }
-          if(diceNums[i]==2){
-            twos++;
-          }
-          if(diceNums[i]==3){
-            threes++;
-          }
-          if(diceNums[i]==4){
-            fours++;
-          }
-          if(diceNums[i]==5){
-            fives++;
-          }
-          if(diceNums[i]==6){
-            sixes++;
-          }
+          if (diceNums[i] == 1) ones++;
+          if (diceNums[i] == 2) twos++;
+          if (diceNums[i] == 3) threes++;
+          if (diceNums[i] == 4) fours++;
+          if (diceNums[i] == 5) fives++;
+          if (diceNums[i] == 6) sixes++;
         }
+
+        //Handle scoring logic
         boolean hasRolled = false;
         
         if(col>0 && col<3 && row>=0 && row<table.getRowCount() && col==playerTurn && table.getValueAt(row,col)==""){
@@ -134,7 +130,8 @@ public class Yahtzee implements ActionListener {
           if(!reroll.getActionCommand().equals("Done")){
             reroll.setActionCommand("Done");
           }
-          
+
+          //Scoring logic for Player 1 and Player 2
           if(col==1 && table.getValueAt(row,col)=="" && reroll.getActionCommand().equals("Done") && hasRolled){
             playerRounds[playerTurn-1]++;
             totalRounds++;
@@ -151,9 +148,8 @@ public class Yahtzee implements ActionListener {
             label.setText("Player 1's turn");
           }
 
-          boolean allEmpty = false;
-          boolean empty=false;
-          
+          //Check if game is over
+          boolean allEmpty = false, empty=false;
           for(int i=1;i<3;i++){
             for(int j = 0; j<6;j++){
               if(table.getValueAt(j,i)==""){
@@ -172,11 +168,13 @@ public class Yahtzee implements ActionListener {
             }
           }
 
+          //Calculate bonuses if all fields are filled
           if(!empty && filled==0){
             calculateBonuses();
             filled++;
           }
-          
+
+          //Final score calculation if all cells are filled
           if(!allEmpty){
             calculateTotal();
             if(total1>total2){
@@ -189,6 +187,7 @@ public class Yahtzee implements ActionListener {
             label.setForeground(Color.RED);
             contentPane3.add(replay);
           }
+          
           reroll.setText("Roll");
           reroll.setActionCommand("Roll");
           roll=0;
@@ -201,25 +200,23 @@ public class Yahtzee implements ActionListener {
     frame.pack();
     frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
     frame.setVisible(true);
-
   };
 
+  //Action handler for buttons
   public void actionPerformed(ActionEvent event) {
     String eventName = event.getActionCommand();
-    if (eventName.equals("Dice1")){
-      changeColor(dice1);
-    }else if (eventName.equals("Dice2")){
-      changeColor(dice2);
-    }else if (eventName.equals("Dice3")){
-      changeColor(dice3);
-    }else if (eventName.equals("Dice4")){
-      changeColor(dice4);
-    }else if (eventName.equals("Dice5")){
-      changeColor(dice5);
-    }
-    
-    if (eventName.equals("Reroll") && roll<3){
-      if(dice1.getBackground().equals(Color.GREEN)){
+
+    // Toggle the color of dice buttons when clicked
+    if (eventName.equals("Dice1")) changeColor(dice1);
+    else if (eventName.equals("Dice2")) changeColor(dice2);
+    else if (eventName.equals("Dice3")) changeColor(dice3);
+    else if (eventName.equals("Dice4")) changeColor(dice4);
+    else if (eventName.equals("Dice5")) changeColor(dice5);
+
+    //Handle rerolling dice and finalizing the turn
+    if (eventName.equals("Reroll") && roll<3){ // Allow rerolling dice if not all rolls are used
+      // Check each die and reroll if it's marked green (selected)
+      if(dice1.getBackground().equals(Color.GREEN)){ 
         dice1=decideButton(1,diceNums,dice1);
       }
       if(dice2.getBackground().equals(Color.GREEN)){
@@ -235,14 +232,17 @@ public class Yahtzee implements ActionListener {
         dice5=decideButton(5,diceNums,dice5);
       }
       
-      roll++;
+      roll++; //Increment roll count
 
+      // Update the "Reroll" button when max rolls are reached
       if(roll==3){
         reroll.setText("Done, fill in the table");
         reroll.setActionCommand("Done");
       }
-      
+
+    // Handle the initial roll when "Roll" is clicked
     }else if(eventName.equals("Roll") && roll==0){
+      // Roll all dice and mark them green for rerolling
       dice1=decideButton(1,diceNums,dice1);
       dice2=decideButton(2,diceNums,dice2);
       dice3=decideButton(3,diceNums,dice3);
@@ -253,13 +253,15 @@ public class Yahtzee implements ActionListener {
       dice3.setBackground(Color.GREEN);
       dice4.setBackground(Color.GREEN);
       dice5.setBackground(Color.GREEN);
-      reroll.setText("Reroll");
+      reroll.setText("Reroll"); // Change button text to "Reroll"
       reroll.setActionCommand("Reroll");
-      roll++;
+      roll++; //Increment roll count
 
     }
 
+    // Reset game state when "Replay" button is clicked
     if(eventName.equals("Replay")){
+      // Reset dice and UI elements for a new game
       dice1=decideButton(1,diceNums,dice1);
       dice2=decideButton(2,diceNums,dice2);
       dice3=decideButton(3,diceNums,dice3);
@@ -295,10 +297,12 @@ public class Yahtzee implements ActionListener {
 
   }
 
+  // Method for rolling dice and updating the button's image
   public JButton decideButton(int dice, int[] diceNums, JButton button){
-    int num = (int)(Math.random()*6)+1;
-    diceNums[dice-1]=num;
-    
+    int num = (int)(Math.random()*6)+1; // Generate random dice number from [1,6]
+    diceNums[dice-1]=num; // Store the result in the diceNums array
+
+    //Set button's icon based on the rolled number
     if(num==1){
       button.setIcon(new ImageIcon("face_1.png"));
     }else if(num==2){
@@ -312,28 +316,32 @@ public class Yahtzee implements ActionListener {
     }else{
       button.setIcon(new ImageIcon("face_6.png"));
     }
-    button.setBackground(Color.GREEN);
-    button.setActionCommand("Dice"+dice);
-    return button;
+    button.setBackground(Color.GREEN); // Mark button as selected for reroll
+    button.setActionCommand("Dice"+dice); // Update action command
+    return button; //return updated button
   }
 
+  // Method to toggle the button's color between red and green
   public void changeColor(JButton button){
     if(button.getBackground().equals(Color.RED)){
-      button.setBackground(Color.GREEN);
+      button.setBackground(Color.GREEN); // If it's red, change to green
     }else{
-      button.setBackground(Color.RED);
+      button.setBackground(Color.RED); // If it's green, change to red
     }
   }
 
+  // Method to calculate the score based on the current dice roll
   public void calculateScore(int row, int col, int ones, int twos, int threes, int fours, int fives, int sixes){
-    
     ArrayList<Integer> tempNums = new ArrayList<Integer>();
+    
+    // Add dice numbers to a temporary list and sort them
     for (int num : diceNums) {
       tempNums.add(num);
     }
     sortList(tempNums);
     findAndRemoveDuplicates(tempNums);
-        
+
+    // Update the score table based on the selected category (Ones, Twos, etc.)
     if(table.getValueAt(row,0).equals("Ones")){
       table.setValueAt(String.valueOf(ones),row,col);
     }else if(table.getValueAt(row,0).equals("Twos")){
@@ -394,7 +402,9 @@ public class Yahtzee implements ActionListener {
 
   }
 
+  // Method to calculate bonuses based on player scores
   public void calculateBonuses(){
+    // Sum up the scores in the upper section of the score table for each player
     upTotal1+=Integer.valueOf(String.valueOf(table.getValueAt(0, 1)));
     upTotal1+=Integer.valueOf(String.valueOf(table.getValueAt(1, 1)));
     upTotal1+=Integer.valueOf(String.valueOf(table.getValueAt(2, 1)));
@@ -402,6 +412,7 @@ public class Yahtzee implements ActionListener {
     upTotal1+=Integer.valueOf(String.valueOf(table.getValueAt(4, 1)));
     upTotal1+=Integer.valueOf(String.valueOf(table.getValueAt(5, 1)));
 
+    //Repeat for player 2
     upTotal2+=Integer.valueOf(String.valueOf(table.getValueAt(0, 2)));
     upTotal2+=Integer.valueOf(String.valueOf(table.getValueAt(1, 2)));
     upTotal2+=Integer.valueOf(String.valueOf(table.getValueAt(2, 2)));
@@ -409,6 +420,7 @@ public class Yahtzee implements ActionListener {
     upTotal2+=Integer.valueOf(String.valueOf(table.getValueAt(4, 2)));
     upTotal2+=Integer.valueOf(String.valueOf(table.getValueAt(5, 2)));
 
+    //check if player qualifies for bonus points
     if(upTotal1>=63){
       bonus1=35;
     }else{
@@ -421,9 +433,11 @@ public class Yahtzee implements ActionListener {
       bonus2=0;
     }
 
+    //add a row for bonuses
     model.insertRow(6,new String[]{"Bonus", String.valueOf(bonus1), String.valueOf(bonus2)});
   }
 
+  // Method to calculate total based on player scores
   public void calculateTotal(){
     downTotal1+=Integer.valueOf(String.valueOf(table.getValueAt(7, 1)));
     downTotal1+=Integer.valueOf(String.valueOf(table.getValueAt(8, 1)));
@@ -442,10 +456,12 @@ public class Yahtzee implements ActionListener {
 
     total1=upTotal1+downTotal1+bonus1;
     total2=upTotal2+downTotal2+bonus2;
-    
+
+    //adds a row for total scores of each player
     model.addRow(new String[]{"Total", String.valueOf(total1), String.valueOf(total2)});
   }
 
+  //method that sorts list in ascending order
   public void sortList(ArrayList<Integer> list){
     for(int i=0; i<list.size()-1;i++){
       int k = i;
@@ -460,6 +476,7 @@ public class Yahtzee implements ActionListener {
     }
   }
 
+  //method to find and remove duplicates in an arraylist of integers
   public void findAndRemoveDuplicates(ArrayList<Integer> list){
     for(int i=0;i<list.size();i++){
       for(int j=i+1;j<list.size();j++){
@@ -472,6 +489,7 @@ public class Yahtzee implements ActionListener {
   }
 
 
+  //method that runs the GUI
   public static void runGUI() {
     JFrame.setDefaultLookAndFeelDecorated(true);
     Yahtzee yahtzee = new Yahtzee();
