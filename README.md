@@ -15,9 +15,3 @@ This project is a Yahtzee game implemented in Java with a graphical user interfa
 
 - **Java 8 or higher** (Recommended: JDK 8 or later)
 - A working IDE or text editor that supports Java (e.g., IntelliJ IDEA, Eclipse, Visual Studio Code)
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/yahtzee-game.git
