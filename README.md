@@ -1,6 +1,6 @@
 # Yahtzee Game in Java
 
-This project is a Yahtzee game implemented in Java with a graphical user interface (GUI) using the Swing library. Players can roll dice, hold dice, and score various combinations just like the traditional Yahtzee game. 
+This project is a Yahtzee game implemented in Java with a graphical user interface (GUI) using the Swing library. Players can roll dice, hold dice, and score various combinations just like the traditional Yahtzee game. This project was originally created in 2024, but I uploaded it to GitHub in 2025.
 
 ## Features
 
